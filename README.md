@@ -1,3 +1,15 @@
+---
+title: DocuMind PDF QA with RAG
+emoji: 📄
+colorFrom: blue
+colorTo: indigo
+sdk: streamlit
+sdk_version: "1.32.0"
+python_version: "3.10"
+app_file: app.py
+pinned: false
+---
+
 # 📄 DocuMind — Intelligent PDF Q&A with RAG
 
 A modern Streamlit-based Retrieval-Augmented Generation (RAG) application that allows you to upload PDF documents and ask questions grounded strictly in their content. The app uses semantic embeddings and FAISS vector search to find relevant passages with page-level citations and streams answers in real time using Groq's high-speed inference engine.
