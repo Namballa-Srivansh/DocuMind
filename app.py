@@ -47,6 +47,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --------------------------------------------------- Sidebar Configuration -------------------------------------------------------
+@st.cache_data(ttl=3600, show_spinner=False)
 def get_available_models(api_key: str) -> list[str]:
     """Return the model IDs available for the current Groq API key."""
     defaults = [
