@@ -1,180 +1,120 @@
-# 📄 PDF Q&A with RAG
+# 📄 DocuMind — Intelligent PDF Q&A with RAG
 
-A Streamlit-based Retrieval-Augmented Generation (RAG) application that allows you to upload PDF documents and ask questions about their content. The app uses embeddings and vector search to find relevant document chunks and leverages the Groq LLM to provide accurate, grounded answers.
-
-## Features
-
-✨ **Key Capabilities:**
-- 📤 Upload PDF documents instantly
-- 🔍 Smart text chunking with overlap for context preservation
-- 🧠 Local embedding models for privacy-first embeddings
-- ⚡ FAISS-powered vector search for fast retrieval
-- 🤖 Groq LLM integration for intelligent question answering
-- 🎯 Answers grounded only in the uploaded document content
-- 💾 Cached processing for performance optimization
-
-## How It Works
-
-1. **PDF Processing**: Extract and split documents into overlapping chunks
-2. **Embedding**: Convert text chunks into numerical embeddings using a lightweight model
-3. **Indexing**: Store embeddings in a FAISS index for fast similarity search
-4. **Retrieval**: Find top-k most relevant chunks based on your question
-5. **Generation**: Use Groq LLM to answer questions using only retrieved chunks
-
-```
-PDF Upload → Text Extraction → Chunking → Embeddings → FAISS Index → Query → Top-k Retrieval → LLM Response
-```
-
-## Prerequisites
-
-- Python 3.8 or higher
-- A free [Groq API key](https://console.groq.com) (free tier available)
-- ~500 MB disk space for the embedding model (auto-downloaded on first run)
-
-## Installation
-
-1. **Clone the repository:**
-   ```bash
-   git clone <repository-url>
-   cd RAG_project
-   ```
-
-2. **Create a virtual environment (recommended):**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. **Install dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-## Usage
-
-1. **Start the Streamlit app:**
-   ```bash
-   streamlit run app.py
-   ```
-
-2. **Open your browser** at `http://localhost:8501`
-
-3. **Configure the app:**
-   - Enter your Groq API key in the sidebar (get one for free at [console.groq.com](https://console.groq.com))
-   - Review the "How it works" section
-
-4. **Upload a PDF:**
-   - Click "Browse files" and select a PDF document
-   - Wait for processing (extraction, embedding, and indexing)
-
-5. **Ask questions:**
-   - Type questions in the text input field
-   - The app will search the document and provide grounded answers
-   - Results are based only on content from your uploaded PDF
-
-## Dependencies
-
-| Package | Purpose |
-|---------|---------|
-| `streamlit` | Web UI framework |
-| `groq` | LLM API client |
-| `pypdf` | PDF reading and extraction |
-| `faiss-cpu` | Vector similarity search |
-| `sentence-transformers` | Text embedding model |
-| `numpy` | Numerical computations |
-
-## Configuration Options
-
-You can customize the following in `app.py`:
-
-- **Chunk Size**: Default is 500 words per chunk
-- **Chunk Overlap**: Default is 100 words for context continuity
-- **Embedding Model**: Currently uses `all-MiniLM-L6-v2` (384 dimensions)
-- **Top-k Results**: Number of relevant chunks retrieved (typically 4-8)
-
-## Performance Notes
-
-- **First Run**: Model download and initialization may take 1-2 minutes
-- **Caching**: Results are cached by file hash for instant re-processing of the same PDF
-- **Embedding**: Local embedding models run on CPU (fast and private)
-- **Latency**: LLM response time depends on Groq API availability
-
-## Architecture
-
-```
-┌─────────────────────────────────────┐
-│      Streamlit Frontend UI          │
-└──────────────┬──────────────────────┘
-               │
-        ┌──────▼────────┐
-        │  PDF Parser   │─── Text Extraction
-        └──────┬────────┘
-               │
-        ┌──────▼────────┐
-        │ Text Chunking │─── Overlapping Chunks
-        └──────┬────────┘
-               │
-        ┌──────▼────────┐
-        │   Embeddings  │─── Sentence Transformers
-        └──────┬────────┘
-               │
-        ┌──────▼────────┐
-        │ FAISS Index   │─── Vector Search
-        └──────┬────────┘
-               │
-        ┌──────▼────────┐
-        │ Groq API      │─── LLM Response
-        └───────────────┘
-```
-
-## Example Workflow
-
-```
-User: "What is the main topic of this document?"
-      ↓
-App: Retrieves top 4 chunks from FAISS
-      ↓
-App: Sends to Groq: "Answer based on these chunks: [chunks...]"
-      ↓
-Groq: "The main topic is..."
-      ↓
-User: Sees grounded answer
-```
-
-## Troubleshooting
-
-| Issue | Solution |
-|-------|----------|
-| "Could not extract text" | PDF might be image-based; try OCR preprocessing |
-| Slow initial load | First embedding model download takes 1-2 min; this is normal |
-| API errors | Verify your Groq API key is valid and has available credits |
-| Out of memory | Reduce chunk size or use `faiss-gpu` for GPU acceleration |
-
-## Future Improvements
-
-- 🔐 Support for multiple PDFs in a single session
-- 📊 Document metadata and citation tracking
-- 🎨 Custom UI theme options
-- 🔄 Streaming responses for real-time feedback
-- 💾 Persistent vector store for document collection
-
-## Security
-
-- **API Keys**: Never stored locally; entered per session
-- **Embeddings**: Generated locally (no data sent to embedding services)
-- **PDFs**: Processed in-memory; not stored on disk by default
-
-## License
-
-This project is open source and available under the MIT License.
-
-## Support
-
-For issues, questions, or suggestions:
-1. Check the [Groq documentation](https://console.groq.com/docs)
-2. Review [Streamlit docs](https://docs.streamlit.io)
-3. Open an issue on GitHub
+A modern Streamlit-based Retrieval-Augmented Generation (RAG) application that allows you to upload PDF documents and ask questions grounded strictly in their content. The app uses semantic embeddings and FAISS vector search to find relevant passages with page-level citations and streams answers in real time using Groq's high-speed inference engine.
 
 ---
 
-**Made with ❤️ using Streamlit, Groq, and FAISS**
+## ✨ Features
+
+- 📤 **Instant PDF Ingestion**: Extracts text page-by-page while preserving document structure.
+- 📄 **Page-Level Citations**: Sources display exact page numbers and cosine similarity match percentages.
+- ⚡ **Real-Time Token Streaming**: Streams responses token-by-token directly to the chat interface.
+- 🤖 **Multi-Model Support**: Easily switch between supported Groq models:
+  - `llama-3.3-70b-versatile` (Default — versatile & accurate)
+  - `llama-3.1-8b-instant` (Ultra-fast)
+  - `deepseek-r1-distill-llama-70b` (Deep reasoning)
+  - `gemma2-9b-it` (Google Gemma 2)
+- 🔒 **Environment & `.env` Support**: Automatically detects `GROQ_API_KEY` from your environment.
+- 🛠️ **Configurable RAG Parameters**: Interactive sliders for Top-$k$ retrieval, temperature, chunk size, and chunk overlap.
+- ⚡ **One-Click Quick Prompts**: Instant summary, key takeaways, and action item buttons.
+- 📥 **Export Chat History**: Download the conversation transcript and verified citations as Markdown (`.md`).
+- 🔄 **Smart Session Management**: Automatic chat reset upon uploading a new document, plus a manual "Clear Chat" button.
+- 🛡️ **Robust Error Handling**: Clean notifications for API errors, rate limits, and scanned/unreadable documents.
+
+---
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                 Streamlit Web Interface                    │
+└──────────────┬───────────────────────────────┬──────────────┘
+               │ (PDF Upload)                  │ (User Query)
+        ┌──────▼────────┐               ┌──────▼────────┐
+        │  PDF Parser   │ Page Tracking │ Query Embed   │
+        └──────┬────────┘               └──────┬────────┘
+               │                               │
+        ┌──────▼────────┐               ┌──────▼────────┐
+        │ Text Chunking │               │ FAISS Search  │
+        └──────┬────────┘               └──────┬────────┘
+               │                               │ (Top-k Chunks + Pages)
+        ┌──────▼────────┐                      │
+        │ Embeddings    │                      │
+        └──────┬────────┘                      │
+               │                               │
+        ┌──────▼────────┐                      │
+        │  FAISS Index  ├──────────────────────┘
+        └───────────────┘                      │
+                                        ┌──────▼────────┐
+                                        │ Groq LLM API  │ (Streaming Response)
+                                        └──────┬────────┘
+                                               ▼
+                                        Streamed Answer with Citations
+```
+
+---
+
+## 🚀 Quickstart
+
+### 1. Clone & Setup
+```bash
+git clone <repository-url>
+cd RAG_project
+```
+
+### 2. Create Virtual Environment
+```bash
+python -m venv venv
+# On Windows:
+venv\Scripts\activate
+# On macOS/Linux:
+source venv/bin/activate
+```
+
+### 3. Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### 4. (Optional) Configure API Key
+Create a `.env` file in the root directory:
+```env
+GROQ_API_KEY=gsk_your_groq_api_key_here
+```
+*(Or input it directly into the sidebar in the app)*
+
+### 5. Launch the App
+```bash
+streamlit run app.py
+```
+
+---
+
+## 📦 Dependencies
+
+| Package | Purpose |
+|---------|---------|
+| `streamlit` | Reactive Web UI & streaming |
+| `groq` | Fast LLM API client |
+| `pypdf` | Document parsing & text extraction |
+| `faiss-cpu` | Vector indexing & similarity search |
+| `sentence-transformers` | Local embedding model (`all-MiniLM-L6-v2`) |
+| `python-dotenv` | Automatic environment variable loading |
+| `numpy` | Numerical calculations & vector normalization |
+
+---
+
+## ⚙️ Configuration & Customization
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| **Model** | `llama-3.3-70b-versatile` | Groq LLM used for answering queries |
+| **Top-$k$ Chunks** | `4` | Number of most relevant passages passed as context |
+| **Temperature** | `0.2` | Creativity level (lower is more deterministic) |
+| **Chunk Size** | `350 words` | Segment size for embedding |
+| **Chunk Overlap**| `60 words` | Preserves semantic continuity between chunks |
+
+---
+
+## 📄 License
+This project is open source and available under the [MIT License](LICENSE).
